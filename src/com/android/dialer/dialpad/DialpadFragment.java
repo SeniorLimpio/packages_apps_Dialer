@@ -833,6 +833,7 @@ public class DialpadFragment extends Fragment
             startActivity(intent);
             hideAndClearDialpad(false);
         }
+    }
 
     public void onDestroy() {
         super.onDestroy();
