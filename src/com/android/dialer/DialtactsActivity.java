@@ -60,7 +60,6 @@ import com.android.contacts.common.dialog.ClearFrequentsDialog;
 import com.android.contacts.common.interactions.ImportExportDialogFragment;
 import com.android.contacts.common.list.OnPhoneNumberPickerActionListener;
 import com.android.dialer.calllog.CallLogActivity;
-import com.android.dialer.cmstats.DialerStats;
 import com.android.dialer.database.DialerDatabaseHelper;
 import com.android.dialer.dialpad.DialpadFragment;
 import com.android.dialer.dialpad.SmartDialNameMatcher;
@@ -307,8 +306,6 @@ public class DialtactsActivity extends TransactionSafeActivity implements View.O
 
         getActionBar().hide();
 
-        DialerStats.sendEvent(this, "app_launch", DialtactsActivity.class.getSimpleName());
-
         // Add the favorites fragment, and the dialpad fragment, but only if savedInstanceState
         // is null. Otherwise the fragment manager takes care of recreating these fragments.
         if (savedInstanceState == null) {
@@ -496,7 +493,6 @@ public class DialtactsActivity extends TransactionSafeActivity implements View.O
                 }
                 break;
             case R.id.voice_search_button:
-                DialerStats.sendEvent(DialtactsActivity.this, "button_event", "voice_clicked");
                 try {
                     startActivityForResult(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH),
                             ACTIVITY_REQUEST_CODE_VOICE_SEARCH);
@@ -548,7 +544,6 @@ public class DialtactsActivity extends TransactionSafeActivity implements View.O
     }
 
     private void showDialpadFragment(boolean animate) {
-        DialerStats.sendEvent(DialtactsActivity.this, "button_event", "dialer_shown");
         mDialpadFragment.setAdjustTranslationForAnimation(animate);
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (animate) {
@@ -594,7 +589,6 @@ public class DialtactsActivity extends TransactionSafeActivity implements View.O
         mSearchView = (EditText) findViewById(R.id.search_view);
         mSearchView.addTextChangedListener(mPhoneSearchQueryTextListener);
         mSearchView.setHint(getString(R.string.dialer_hint_find_contact));
-        setupEvent(mSearchViewContainer, R.id.search_view, "button_event", "search_clicked");
 
         prepareVoiceSearchButton();
     }
@@ -1032,7 +1026,6 @@ public class DialtactsActivity extends TransactionSafeActivity implements View.O
     }
 
     public void allContactsClick(View v) {
-        DialerStats.sendEvent(DialtactsActivity.this, "button_event", "contacts_clicked");
         onShowAllContacts();
     }
 
@@ -1102,22 +1095,5 @@ public class DialtactsActivity extends TransactionSafeActivity implements View.O
 
     private boolean shouldShowOnscreenDialButton() {
         return getResources().getBoolean(R.bool.config_show_onscreen_dial_button);
-    }
-
-    /**
-     * Add analytics event for view
-     * @param v
-     * @param buttonId
-     * @param category
-     * @param action
-     */
-    private void setupEvent(View v, int buttonId, final String category, final String action) {
-        final View pageviewButton = v.findViewById(buttonId);
-        pageviewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialerStats.sendEvent(DialtactsActivity.this, category, action);
-            }
-        });
     }
 }
